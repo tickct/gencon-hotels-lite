@@ -8,7 +8,7 @@ After logging in to the housing portal via your Gencon profile, you will have a 
 ```https://book.passkey.com/reg/32ZABCD-1234/01234567890abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqr```
 
 
-This section is the value you should use for "housing-token'
+This section is the value you should use for "housing-token"
 
 ```32ZABCD-1234```
 
