@@ -5,8 +5,10 @@ This is written using Python 3.7, so please make sure you're using a modern vers
 ## Getting The Token and Auth String
 After logging in to the housing portal via your Gencon profile, you will have a link that looks something like this:
 ```https://book.passkey.com/reg/32ZABCD-1234/01234567890abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqr```
+
 This section is the value you should use for "housing-token'
 ```32ZABCD-1234```
+
 This section is the value you should use for "housing-authstring"
 ```01234567890abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqr```
 
