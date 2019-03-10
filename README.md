@@ -17,16 +17,16 @@ The columns in the script's output are:
 ## Setup
 Either clone the script
 ```bash
-https://github.com/overallcoma/gencon-hotels-lite.git
+git clone https://github.com/overallcoma/gencon-hotels-lite.git
 ```
 Or download the [zip file](https://github.com/overallcoma/gencon-hotels-lite/archive/master.zip)
 
-##Install required packages
+## Install required packages
 ```bash
 pip install -r requirements.txt
 ```
 
-##Config File Setup
+## Config File Setup
 Modify the contents of gencon-hotels-lite.cfg to your requirements and save to gencon-hotes-lite.cfg
 The parameters do the following:
 
