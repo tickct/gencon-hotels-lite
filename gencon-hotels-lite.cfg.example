@@ -1,0 +1,35 @@
+[account-config]
+housing-token = XXXXXXXX-XXXX
+housing-authstring = XxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXx
+check-frequency = 60
+
+[search-filters]
+check-in = 2019-07-31
+check-out = 2019-08-04
+search-skywalk = true
+search-blocks = true
+max-blocks = 10
+search-miles = false
+max-miles = 20
+hotel-name-filter-enabled = false
+hotel-name-filter-keyword = Hilton
+hotel-room-filter-enabled = false
+hotel-room-filter-filter-include = Queen
+hotel-room-filter-filter-exclude = King
+
+[alerts-config]
+send-email = false
+send-sms = false
+
+[email-send-config]
+from-user = myemail@example.com
+from-password = password
+send-to = myemail@example.com
+smtp-server = smtp.gmail.com
+smtp-port = 465
+
+[sms-send-config]
+twilio-account-sid = TwilioAccountSID
+twilio-account-auth = TwilioAuthToken
+from-number = +15555555555
+to-numbers = +15555555556
