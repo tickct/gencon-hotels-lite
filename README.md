@@ -1,5 +1,3 @@
-![](/../imgs/demo.png)
-
 This script polls the Gencon housing portal, displays available hotel rooms, and send alerts based upon user preferences.
 
 This is written using Python 3.7, so please make sure you're using a modern version of [Python](https://www.python.org/)
