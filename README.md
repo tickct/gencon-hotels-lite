@@ -2,17 +2,13 @@ This script polls the Gencon housing portal, displays available hotel rooms, and
 
 This is written using Python 3.7, so please make sure you're using a modern version of [Python](https://www.python.org/)
 
-## Output
-
-The columns in the script's output are:
-
-* `Hotel Name` -- The name of the hotel found that meets supplied search filters
-* `Distance` -- How far away the hotel is. "Skywalk" means the hotel is connected to the ICC by a skywalk.
-* `DistancUnit` -- The unit type of the 'Distance' measure.  Usually either '*' for Skywahlk rooms, 'Blocks', or 'Miles'.
-* `Room Type` -- The type of room - probably something like "Double/Double" or "King"
-* `Price` -- The total price, before taxes/fees. Essentially the nightly rate times the number of nights.
-* `Total Price` -- Price including taxes 
-* `Inventory` -- The number of rooms of this type that are available
+## Getting The Token and Auth String
+After logging in to the housing portal via your Gencon profile, you will have a link that looks something like this:
+* `https://book.passkey.com/reg/32ZABCD-1234/01234567890abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqr`
+This section is the value you should use for "housing-token'
+* `32ZABCD-1234`
+This section is the value you should use for "housing-authstring"
+* `01234567890abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqr`
 
 ## Setup
 Either clone the script
@@ -73,3 +69,15 @@ To fetch and run the script, open a terminal (Linux, Mac) / command prompt (Wind
 ```sh
 python gencon-hotels-lite.py
 ```
+
+## Output
+
+The columns in the script's output are:
+
+* `Hotel Name` -- The name of the hotel found that meets supplied search filters
+* `Distance` -- How far away the hotel is. "Skywalk" means the hotel is connected to the ICC by a skywalk.
+* `DistancUnit` -- The unit type of the 'Distance' measure.  Usually either '*' for Skywahlk rooms, 'Blocks', or 'Miles'.
+* `Room Type` -- The type of room - probably something like "Double/Double" or "King"
+* `Price` -- The total price, before taxes/fees. Essentially the nightly rate times the number of nights.
+* `Total Price` -- Price including taxes 
+* `Inventory` -- The number of rooms of this type that are available
