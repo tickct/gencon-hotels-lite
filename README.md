@@ -2,31 +2,34 @@ This script polls the Gencon housing portal, displays available hotel rooms, and
 
 This is written using Python 3.7, so please make sure you're using a modern version of [Python](https://www.python.org/)
 
-## Output
+## Getting The Token and Auth String
+After logging in to the housing portal via your Gencon profile, you will have a link that looks something like this:
 
-The columns in the script's output are:
+```https://book.passkey.com/reg/32ZABCD-1234/01234567890abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqr```
 
-* `Hotel Name` -- The name of the hotel found that meets supplied search filters
-* `Distance` -- How far away the hotel is. "Skywalk" means the hotel is connected to the ICC by a skywalk.
-* `DistancUnit` -- The unit type of the 'Distance' measure.  Usually either '*' for Skywahlk rooms, 'Blocks', or 'Miles'.
-* `Room Type` -- The type of room - probably something like "Double/Double" or "King"
-* `Price` -- The total price, before taxes/fees. Essentially the nightly rate times the number of nights.
-* `Total Price` -- Price including taxes 
-* `Inventory` -- The number of rooms of this type that are available
+
+This section is the value you should use for "housing-token"
+
+```32ZABCD-1234```
+
+
+This section is the value you should use for "housing-authstring"
+
+```01234567890abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqr```
 
 ## Setup
 Either clone the script
 ```bash
-https://github.com/overallcoma/gencon-hotels-lite.git
+git clone https://github.com/overallcoma/gencon-hotels-lite.git
 ```
 Or download the [zip file](https://github.com/overallcoma/gencon-hotels-lite/archive/master.zip)
 
-##Install required packages
+## Install required packages
 ```bash
 pip install -r requirements.txt
 ```
 
-##Config File Setup
+## Config File Setup
 Modify the contents of gencon-hotels-lite.cfg to your requirements and save to gencon-hotes-lite.cfg
 The parameters do the following:
 
@@ -36,7 +39,7 @@ The parameters do the following:
 * `check-frequency` = This is how often the script updates the data.  Default is 60.  I highly recommend you don't drop it below 30 or you will likely get errors after a while.
 
 * `check-in` - The date you would like to check in (YYYY-MM-DD)
-* `check-out` - The date you would like to check out (YYY-MM-DD)
+* `check-out` - The date you would like to check out (YYYY-MM-DD)
 * `search-skywalk` - Set the filter to accept the word "Skywalk" for a desired room.  Set to 'true' or 'false'.
 * `search-blocks` - Set the filter to accept "Blocks" as an acceptable distance measure.  Set to 'true' or 'false'.
 * `max-blocks` - Maximum measure of blocks to have included in the results.  Required if 'search-blocks' is 'true'.
@@ -73,3 +76,15 @@ To fetch and run the script, open a terminal (Linux, Mac) / command prompt (Wind
 ```sh
 python gencon-hotels-lite.py
 ```
+
+## Output
+
+The columns in the script's output are:
+
+* `Hotel Name` -- The name of the hotel found that meets supplied search filters
+* `Distance` -- How far away the hotel is. "Skywalk" means the hotel is connected to the ICC by a skywalk.
+* `DistancUnit` -- The unit type of the 'Distance' measure.  Usually either '*' for Skywahlk rooms, 'Blocks', or 'Miles'.
+* `Room Type` -- The type of room - probably something like "Double/Double" or "King"
+* `Price` -- The total price, before taxes/fees. Essentially the nightly rate times the number of nights.
+* `Total Price` -- Price including taxes 
+* `Inventory` -- The number of rooms of this type that are available
