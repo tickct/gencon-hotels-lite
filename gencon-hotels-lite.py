@@ -274,10 +274,15 @@ def get_hotel_room_objects():
     try:
         parser = PassKeyParser(response)
         hotels = json.loads(parser.json)
+    except TypeError:
+        current_time = (datetime.datetime.now().time())
+        print(current_time + " - Error Scraping Page - Continuing Script")
+        print("This is an expected occasional error - do not worry")
+        return []
     except Exception as e:
-        print(datetime.datetime.now().time())
-        print("Generated Error scraping webpage")
-        print("This happens occasionally. Not a big deal. Execution will continue.")
+        current_time = (datetime.datetime.now().time())
+        print(current_time + " - Error Scraping Page - Continuing Script")
+        print("This is not an expected error - report this for repair")
         print(e)
         return []
 
