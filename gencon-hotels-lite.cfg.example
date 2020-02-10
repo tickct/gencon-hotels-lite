@@ -4,12 +4,12 @@ housing-authstring = XxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxX
 check-frequency = 60
 
 [search-filters]
-check-in = 2019-07-31
-check-out = 2019-08-04
+check-in = 2020-07-29
+check-out = 2020-08-03
 search-skywalk = true
 search-blocks = true
 max-blocks = 10
-search-miles = false
+search-miles = true
 max-miles = 20
 hotel-name-filter-enabled = false
 hotel-name-filter-keyword = Hilton

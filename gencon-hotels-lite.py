@@ -6,6 +6,7 @@ from html.parser import HTMLParser
 import time
 import datetime
 from prettytable import PrettyTable
+import os
 
 try:
     configfilename = "./gencon-hotels-lite.cfg"
@@ -203,7 +204,7 @@ except Exception as e:
 # Other Variables Needed #
 base_portal_url = "https://book.passkey.com"
 housing_url_initial = base_portal_url + "/reg/{0}/{1}".format(housing_token, housing_authstring)
-housing_url_post_base = base_portal_url + "/event/49822766/owner/10909638"
+housing_url_post_base = base_portal_url + "/event/50023680/owner/10909638"
 housing_url_available_post = housing_url_post_base + "/list/hotels/available"
 
 # Create a user agent string for requests in case they start blocking it again #
@@ -518,8 +519,8 @@ def search_workflow():
     alerts_triggered = 0
     hotel_room_objects_filtered = filter_hotel_room_objects(hotel_room_objects)
     if hotel_room_objects_filtered:
-        print("\n" * 30)
         output_table = table_creation(hotel_room_objects)
+        clear()
         print(output_table)
         if alert_send_email or alert_send_sms:
             send_alerts(hotel_room_objects_filtered)
@@ -528,6 +529,15 @@ def search_workflow():
             alerts_triggered = 1
     if alerts_triggered == 1:
         time.sleep(60)
+
+
+def clear():
+    # for windows
+    if os.name == 'nt':
+        _ = os.system('cls')
+        # for mac and linux(here, os.name is 'posix')
+    else:
+        _ = os.system('clear')
 
 
 print("Gencon-Hotels-Lite is running")
