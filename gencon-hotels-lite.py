@@ -207,7 +207,7 @@ try:
     if alert_send_tweet == "true":
         alert_send_tweet = True
     elif alert_send_tweet == "false":
-        alert_send_tweet == False
+        alert_send_tweet = False
     else:
         print("Error reading the twitter alert setting - must be 'true' or 'false'")
 except Exception as e:
