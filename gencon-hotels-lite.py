@@ -23,15 +23,34 @@ except Exception as e:
     print(e)
     exit(1)
 
+
+def format_dateobjects(inputstring):
+    list_object = inputstring.split(',')
+    return_list = []
+    for dateobject in list_object:
+        dateobject = "[" + dateobject + "]"
+        dateobject = dateobject.replace('-', ', ')
+        return_list.append(dateobject)
+    return return_list
+
+
 # Values from config file #
+target_config = config["target-config"]
+event_id = target_config["event-id"]
+owner_id = target_config["owner-id"]
+
 account_config = config["account-config"]
 housing_token = account_config["housing-token"]
 housing_authstring = account_config["housing-authstring"]
 check_frequency = int(account_config["check-frequency"])
 
 search_filters = config["search-filters"]
-filter_checkin = search_filters["check-in"]
-filter_checkout = search_filters["check-out"]
+filter_event_dates = search_filters["event-dates"]
+# I'm putthing this here because I need the dates in this format for a later query
+filter_searchstart = filter_event_dates.split(',')[0]
+filter_searchend = filter_event_dates.split(',')[-1]
+# Now that I have the POST date structure in the above variables, we can reformat this into the list I need
+filter_event_dates = format_dateobjects(filter_event_dates)
 filter_search_skywalk = search_filters["search-skywalk"]
 filter_search_blocks = search_filters["search-blocks"]
 filter_search_blocks_max = search_filters["max-blocks"]
@@ -233,11 +252,11 @@ except Exception as e:
 # Other Variables Needed #
 base_portal_url = "https://book.passkey.com"
 housing_url_initial = base_portal_url + "/reg/{0}/{1}".format(housing_token, housing_authstring)
-housing_url_post_base = base_portal_url + "/event/50023680/owner/10909638"
+housing_url_post_base = base_portal_url + "/event/" + event_id + "/owner/" + owner_id
 housing_url_available_post = housing_url_post_base + "/list/hotels/available"
 
 # Create a user agent string for requests in case they start blocking it again #
-user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.37 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36"
+user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.37 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.37"
 user_agent_header = {
     'User-Agent': user_agent
 }
@@ -265,29 +284,23 @@ class hotelroom(object):
     name = ''
     distance = ''
     price = ''
-    taxrate = ''
-    taxcost = ''
-    subtotal = ''
     inventory = 0
     roomtype = ''
     hotelID = ''
     roomID = ''
 
-    def __init__(self, name, distance, price, taxrate, taxcost, subtotal, inventory, roomtype, hotelID, roomID):
+    def __init__(self, name, distance, price, inventory, roomtype, hotelID, roomID):
         self.name = name
         self.distance = distance
         self.price = price
-        self.taxrate = taxrate
-        self.taxcost = taxcost
-        self.subtotal = subtotal
         self.inventory = inventory
         self.roomtype = roomtype
         self.hotelID = hotelID
         self.roomID = roomID
 
 
-def make_hotel_room_object(name, distance, price, taxrate, taxcost, subtotal, inventory, roomtype, hotelID, roomID):
-    hotel_room = hotelroom(name, distance, price, taxrate, taxcost, subtotal, inventory, roomtype, hotelID, roomID)
+def make_hotel_room_object(name, distance, price, inventory, roomtype, hotelID, roomID):
+    hotel_room = hotelroom(name, distance, price, inventory, roomtype, hotelID, roomID)
     return hotel_room
 
 
@@ -295,34 +308,49 @@ def get_hotel_room_objects():
     post_room_select_url = housing_url_post_base + "/rooms/select"
     response = requests.get(housing_url_initial, headers=user_agent_header)
     response_cookies = response.cookies
-    # This filters based on whether the rooms are actually available
-    post_data = construct_showavail_post()
-    requests.post(housing_url_available_post, data=post_data, headers=user_agent_header, cookies=response_cookies)
-    # This constructs the search based on date
     post_data = construct_search_post()
+    requests.post(housing_url_available_post, data='', headers=user_agent_header, cookies=response_cookies)
     response = requests.post(post_room_select_url, data=post_data, headers=user_agent_header, cookies=response_cookies)
-
     try:
         parser = PassKeyParser(response)
         hotels = json.loads(parser.json)
-    except TypeError:
+    except TypeError as e:
+        print(e)
         current_time = str(datetime.datetime.now())
         print(current_time + " - Error Scraping Page - Continuing Script")
         print("This is an expected occasional error - do not worry")
         return []
-    except Exception as e:
+    except Exception as i:
         current_time = str(datetime.datetime.now())
         print(current_time + " - Error Scraping Page - Continuing Script")
         print("This is not an expected error - report this for repair")
-        print(e)
+        print(i)
+        return []
+    if hotels:
+        return hotels
+    else:
         return []
 
-    available_room_list = []
 
-    if hotels:
-        for hotel in hotels:
-            for block in hotel['blocks']:
-                hotel_name = html.unescape(hotel['name'])
+def hotel_room_parser(hotel_json_list):
+    available_room_list = []
+    for hotel in hotel_json_list:
+        for block in hotel['blocks']:
+            room_avail_event = True
+            room_inventory = 99999
+            nightly_rate = block['averageRate']
+            for room in block['inventory']:
+                if room_avail_event is False:
+                    break
+                room_date = str(room['date'])
+                if room_date in filter_event_dates:
+                    if room['available'] == 0 or room['available'] == room['wlAvailable']:
+                        room_avail_event = False
+                        room_inventory = 0
+                        break
+                    elif room['available'] < room_inventory:
+                        room_inventory = int(room['available'])
+            if room_avail_event:
                 if hotel['distanceUnit'] == 0:
                     hotel_distance = "Skywalk"
                 elif hotel['distanceUnit'] == 1:
@@ -331,43 +359,17 @@ def get_hotel_room_objects():
                     hotel_distance = "{} Mile(s)".format(hotel['distanceFromEvent'])
                 else:
                     hotel_distance = "unknown"
-                hotel_room_price = sum(inv['rate'] for inv in block['inventory'])
-                hotel_room_inventory = min(inv['available'] for inv in block['inventory'])
+                hotel_name = html.unescape(hotel['name'])
+                hotel_room_inventory = room_inventory
                 hotel_room_type = html.unescape(block['name'])
-                hotel_room_hotelID = (hotel['id'])
-                hotel_room_roomID = (block['id'])
-
-                try:
-                    hotel_room_tax_policy = html.unescape(block['taxPolicy'])
-                    hotel_room_tax_rate = float((hotel_room_tax_policy.split("%")[0])[-2:])
-                except Exception as e:
-                    hotel_room_tax_rate = 17
-                    print(e)
-
-                try:
-                    hotel_total_tax_cost = (float(hotel_room_price) * float(hotel_room_tax_rate))/100
-                except Exception as e:
-                    hotel_total_tax_cost = 200
-                    print(e)
-
-                hotel_room_subtotal = str(format(float(float(hotel_room_price) + float(hotel_total_tax_cost)), '.2f'))
-                hotel_room_price = str(format(hotel_room_price, '.2f'))
-                hotel_room_tax_rate = str(format(hotel_room_tax_rate, '.2f'))
-                hotel_total_tax_cost = str(format(hotel_total_tax_cost, '.2f'))
-
-                hotel_room_object = make_hotel_room_object(hotel_name, hotel_distance, hotel_room_price, hotel_room_tax_rate, hotel_total_tax_cost, hotel_room_subtotal, hotel_room_inventory, hotel_room_type, hotel_room_hotelID, hotel_room_roomID)
+                hotel_room_hotel_id = (hotel['id'])
+                hotel_room_room_id = (block['id'])
+                hotel_room_price = str(format(nightly_rate, '.2f'))
+                hotel_room_object = make_hotel_room_object(hotel_name, hotel_distance, hotel_room_price,
+                                                           hotel_room_inventory, hotel_room_type, hotel_room_hotel_id,
+                                                           hotel_room_room_id)
                 available_room_list.append(hotel_room_object)
-    else:
-        print("error parsing hotels through filters - aborting this run")
     return available_room_list
-
-
-def construct_showavail_post():
-    showavailable = True
-    payload = {
-        'showAvailable': showavailable
-    }
-    return payload
 
 
 def construct_search_post():
@@ -379,8 +381,8 @@ def construct_search_post():
     payload = {
         'hotelId': search_hotel_id,
         'blockMap.blocks[0].blockId': search_block_id,
-        'blockMap.blocks[0].checkIn': filter_checkin,
-        'blockMap.blocks[0].checkOut': filter_checkout,
+        'blockMap.blocks[0].checkIn': filter_searchstart,
+        'blockMap.blocks[0].checkOut': filter_searchend,
         'blockMap.blocks[0].numberOfGuests': search_numberofguests,
         'blockMap.blocks[0].numberOfRooms': search_numberofrooms,
         'blockMap.blocks[0].numberOfChildren': search_numberofchildren
@@ -403,9 +405,6 @@ def filter_hotel_room_objects(hotel_room_object_list):
             hotel_room_object_list = filter_hotel_room_objects_roomkeyword(hotel_room_object_list)
         else:
             return hotel_room_object_list
-    # This is a sanity check to make sure rooms available exceeds 0
-    # Sometimes setting the "only show available" fails, so this is here to avoid false positives
-    hotel_room_object_list = filter_hotel_room_objects_availablecheck(hotel_room_object_list)
     return hotel_room_object_list
 
 
@@ -444,14 +443,6 @@ def filter_hotel_room_objects_roomkeyword(hotel_room_object_list):
         if filter_search_room_keyword_include in hotel_room.roomtype:
             if filter_search_room_keyword_exclude not in hotel_room.roomtype:
                 filtered_list.append(hotel_room)
-    return filtered_list
-
-
-def filter_hotel_room_objects_availablecheck(hotel_room_object_list):
-    filtered_list = []
-    for hotel_room in hotel_room_object_list:
-        if hotel_room.inventory > 0:
-            filtered_list.append(hotel_room)
     return filtered_list
 
 
@@ -507,20 +498,22 @@ def send_sms_alert(hotel_room):
 
 
 def post_to_twitter(tweet_string):
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_token_secret)
+    auth = tweepy.OAuthHandler(twitter_consumerkey, twitter_consumersecret)
+    auth.set_access_token(twitter_accesstoken, twitter_accesstokensecret)
     api = tweepy.API(auth)
     api.update_status(tweet_string)
 
 
 def send_twitter_alert(hotel_room):
-    message = "Gencon Hotel Alert\n{0}\n{1}".format(hotel_room.name, hotel_room.roomtype)
+    now = datetime.datetime.now()
+    date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+    message = "Gencon Hotel Alert\n{0}\n{1}\n{2}".format(date_time, hotel_room.name, hotel_room.roomtype)
     post_to_twitter(message)
 
 
 def table_creation(hotel_list):
     table_output = PrettyTable()
-    table_output.field_names = ["Hotel Name", "Distance", "DistanceUnit", "Room Type", "Price", "Total Price", "Inventory"]
+    table_output.field_names = ["Hotel Name", "Distance", "DistanceUnit", "Room Type", "Price", "Inventory"]
     for hotel_room in hotel_list:
         if "Skywalk" not in hotel_room.distance:
             distance = table_get_distance(hotel_room.distance)
@@ -528,7 +521,7 @@ def table_creation(hotel_list):
         elif "Skywalk" in hotel_room.distance:
             distance = "Skywalk"
             distance_unit = "*"
-        table_output.add_row([hotel_room.name, distance, distance_unit, hotel_room.roomtype, hotel_room.price, hotel_room.subtotal, hotel_room.inventory])
+        table_output.add_row([hotel_room.name, distance, distance_unit, hotel_room.roomtype, hotel_room.price, hotel_room.inventory])
     table_output.sortby = "Distance"
     table_output.reversesort = False
     title_string = str("Gencon Hotel Rooms Status - Updated " + str(datetime.datetime.now()))
@@ -559,18 +552,18 @@ def table_get_distanceunit(combined_input):
 
 
 def search_workflow():
-    hotel_room_objects = get_hotel_room_objects()
     alerts_triggered = 0
-    hotel_room_objects_filtered = filter_hotel_room_objects(hotel_room_objects)
-    if hotel_room_objects_filtered:
-        output_table = table_creation(hotel_room_objects)
-        clear()
-        print(output_table)
-        if alert_send_email or alert_send_sms or alert_send_tweet:
-            send_alerts(hotel_room_objects_filtered)
-            print("\n" * 3)
-            print("Alerts Sent Out")
-            alerts_triggered = 1
+    hotel_room_json_list = get_hotel_room_objects()
+    hotel_room_objects = hotel_room_parser(hotel_room_json_list)
+    hotel_room_objects = filter_hotel_room_objects(hotel_room_objects)
+    clear()
+    output_table = table_creation(hotel_room_objects)
+    print(output_table)
+    if alert_send_email or alert_send_sms or alert_send_tweet:
+        send_alerts(hotel_room_objects)
+        print("\n" * 3)
+        print("Alerts Sent Out")
+        alerts_triggered = 1
     if alerts_triggered == 1:
         time.sleep(60)
 

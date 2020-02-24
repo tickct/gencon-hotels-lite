@@ -1,11 +1,14 @@
+[target-config]
+event-id = 50023680
+owner-id = 10909638
+
 [account-config]
 housing-token = XXXXXXXX-XXXX
 housing-authstring = XxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXx
-check-frequency = 60
+check-frequency = 10
 
 [search-filters]
-check-in = 2020-07-29
-check-out = 2020-08-03
+event-dates = 2020-7-30,2020-7-31,2020-8-1
 search-skywalk = true
 search-blocks = true
 max-blocks = 10
@@ -20,6 +23,7 @@ hotel-room-filter-filter-exclude = King
 [alerts-config]
 send-email = false
 send-sms = false
+send-twitter = false
 
 [email-send-config]
 from-user = myemail@example.com

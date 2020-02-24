@@ -1,6 +1,6 @@
 This script polls the Gencon housing portal, displays available hotel rooms, and send alerts based upon user preferences.
 
-This is written using Python 3.7, so please make sure you're using a modern version of [Python](https://www.python.org/)
+This is written using Python 3.8, so please make sure you're using a modern version of [Python](https://www.python.org/)
 
 ## Getting The Token and Auth String
 After logging in to the housing portal via your Gencon profile, you will have a link that looks something like this:
@@ -53,6 +53,7 @@ The parameters do the following:
 
 * `send-email` - Enables or Disables the sending of email alerts.  Set to 'true' or 'false'.
 * `send-sms` - Enables or Disables the sending of SMS messages.  Set to 'true' or 'false'.
+* `send-twitter` - Enables or Disables the sending of Twitter Alerts.  Set to 'true' or 'false'.
 
 * `from-user` - if send-email is set to "true", this is the source from which the alert email will be sent
 * `from-password` - if send-email is set to "true", this is the password required for sending email from the "from-user" address
@@ -66,15 +67,25 @@ The parameters do the following:
 * `to-numbers` - if "send-sms" is set to true, this is a list of target phone numbers seperated with a comma and no spaces.
 For example - "+15555555555,+11231234567"
 
+* `twitter-consumer-key` = if "send-twitter" is set to true, this is your Twitter API Consumer Key
+* `twitter-consumer-secret` = if "send-twitter" is set to true, this is your Twitter API Consumer Secret
+* `twitter-access-token` = if "send-twitter" is set to true, this is your Twitter API Access Token
+* `twitter-access-token-secret` = 	if "send-twitter" is set to true, this is your Twitter API Access Token Secret
+
 Modify this file and save to gencon-hotels-lite.cfg in the same folder as gencon-hotels-lite.py
 If you are not using email and/or sms, you can leave the fields blank with the exception of the "true" or "false" values which much be filled in.
 
 ## Running the Script
 
-To fetch and run the script, open a terminal (Linux, Mac) / command prompt (Windows) and run:
+To run the script, open a terminal (Linux, Mac) / command prompt (Windows) and run:
 
 ```sh
 python gencon-hotels-lite.py
+```
+
+Alternatively - a Windows Binary is included
+```sh
+gencon-hotel-lite.exe
 ```
 
 ## Output
@@ -86,5 +97,4 @@ The columns in the script's output are:
 * `DistancUnit` -- The unit type of the 'Distance' measure.  Usually either '*' for Skywahlk rooms, 'Blocks', or 'Miles'.
 * `Room Type` -- The type of room - probably something like "Double/Double" or "King"
 * `Price` -- The total price, before taxes/fees. Essentially the nightly rate times the number of nights.
-* `Total Price` -- Price including taxes 
 * `Inventory` -- The number of rooms of this type that are available
