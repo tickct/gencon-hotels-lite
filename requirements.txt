@@ -1,3 +1,4 @@
 requests
 twilio
 PTable
+tweepy

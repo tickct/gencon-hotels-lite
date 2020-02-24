@@ -46,6 +46,7 @@ filter_search_room_keyword_exclude = search_filters["hotel-room-filter-filter-ex
 alert_actions = config["alerts-config"]
 alert_send_email = alert_actions["send-email"]
 alert_send_sms = alert_actions["send-sms"]
+alert_send_tweet = alert_actions["send-twitter"]
 
 # Process the search variables from the config file
 try:
@@ -201,6 +202,34 @@ except Exception as e:
     print(e)
     exit(1)
 
+
+try:
+    if alert_send_tweet == "true":
+        alert_send_tweet = True
+    elif alert_send_tweet == "false":
+        alert_send_tweet == False
+    else:
+        print("Error reading the twitter alert setting - must be 'true' or 'false'")
+except Exception as e:
+    print("Error reading the alert sms setting - must be 'true' or 'false'")
+    print(e)
+    exit(1)
+
+
+try:
+    if alert_send_tweet == True:
+        import tweepy
+        twitter_config = config["twitter-send-config"]
+        twitter_consumerkey = twitter_config["twitter-consumer-key"]
+        twitter_consumersecret = twitter_config["twitter-consumer-secret"]
+        twitter_accesstoken = twitter_config["twitter-access-token"]
+        twitter_accesstokensecret = twitter_config["twitter-access-token-secret"]
+except Exception as e:
+    print("Unable to parse twitter config")
+    print(e)
+    exit(1)
+
+
 # Other Variables Needed #
 base_portal_url = "https://book.passkey.com"
 housing_url_initial = base_portal_url + "/reg/{0}/{1}".format(housing_token, housing_authstring)
@@ -212,6 +241,7 @@ user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.37 (KHTM
 user_agent_header = {
     'User-Agent': user_agent
 }
+
 
 class PassKeyParser(HTMLParser):
     def __init__(self, response):
@@ -431,6 +461,8 @@ def send_alerts(hotel_room_object_list):
             send_email_alert(hotel_room)
         if alert_send_sms:
             send_sms_alert(hotel_room)
+        if alert_send_tweet:
+            send_twitter_alert(hotel_room)
 
 
 def send_email_alert(hotel_room):
@@ -472,6 +504,18 @@ def send_sms_alert(hotel_room):
         except Exception as e:
             print("Could not send SMS to {0}".format(phone_number))
             print(e)
+
+
+def post_to_twitter(tweet_string):
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    auth.set_access_token(access_token, access_token_secret)
+    api = tweepy.API(auth)
+    api.update_status(tweet_string)
+
+
+def send_twitter_alert(hotel_room):
+    message = "Gencon Hotel Alert\n{0}\n{1}".format(hotel_room.name, hotel_room.roomtype)
+    post_to_twitter(message)
 
 
 def table_creation(hotel_list):
@@ -522,7 +566,7 @@ def search_workflow():
         output_table = table_creation(hotel_room_objects)
         clear()
         print(output_table)
-        if alert_send_email or alert_send_sms:
+        if alert_send_email or alert_send_sms or alert_send_tweet:
             send_alerts(hotel_room_objects_filtered)
             print("\n" * 3)
             print("Alerts Sent Out")
