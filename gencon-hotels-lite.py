@@ -256,7 +256,7 @@ housing_url_post_base = base_portal_url + "/event/" + event_id + "/owner/" + own
 housing_url_available_post = housing_url_post_base + "/list/hotels/available"
 
 # Create a user agent string for requests in case they start blocking it again #
-user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.37 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.37"
+user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.116 Safari/537.36"
 user_agent_header = {
     'User-Agent': user_agent
 }
@@ -308,8 +308,9 @@ def get_hotel_room_objects():
     post_room_select_url = housing_url_post_base + "/rooms/select"
     response = requests.get(housing_url_initial, headers=user_agent_header)
     response_cookies = response.cookies
-    post_data = construct_search_post()
+    # This POST "unchecks" the "Only show available" and gives you all the rooms, available or not
     requests.post(housing_url_available_post, data='', headers=user_agent_header, cookies=response_cookies)
+    post_data = construct_search_post()
     response = requests.post(post_room_select_url, data=post_data, headers=user_agent_header, cookies=response_cookies)
     try:
         parser = PassKeyParser(response)
@@ -464,7 +465,8 @@ def send_email_alert(hotel_room):
         Distance - {1}\n
         Total Stay Price - {2}\n
         Inventory Available - {3}\n
-        Type of Room - {4}""".format(hotel_room.name, hotel_room.distance, hotel_room.price, hotel_room.inventory, hotel_room.roomtype)
+        Type of Room - {4}""".format(hotel_room.name, hotel_room.distance, hotel_room.price, hotel_room.inventory,
+                                     hotel_room.roomtype)
 
         msg = MIMEText(message, 'plain')
         msg['Subject'] = "Gencon Hotel Alert"
@@ -483,25 +485,22 @@ def send_email_alert(hotel_room):
 
 
 def send_sms_alert(hotel_room):
-    message = "Hotel Alert\n{0}\n{1}\nPrice - {2}\n Avail - {3}\n Type - {4}".format(hotel_room.name, hotel_room.distance, hotel_room.price, hotel_room.inventory, hotel_room.roomtype)
+    message = "Hotel Alert\n{0}\n{1}\nPrice - {2}\n Avail - {3}\n Type - {4}".format(hotel_room.name,
+                                                                                     hotel_room.distance,
+                                                                                     hotel_room.price,
+                                                                                     hotel_room.inventory,
+                                                                                     hotel_room.roomtype)
     client = Client(sms_twiliosid, sms_twilioauth)
-    for phone_number in sms_sendto:
+    for number in sms_sendto:
         try:
             client.messages.create(
                 from_=sms_sendfrom,
                 body=message,
-                to=phone_number
+                to=number
             )
         except Exception as e:
-            print("Could not send SMS to {0}".format(phone_number))
+            print("Could not send SMS to {0}".format(number))
             print(e)
-
-
-def post_to_twitter(tweet_string):
-    auth = tweepy.OAuthHandler(twitter_consumerkey, twitter_consumersecret)
-    auth.set_access_token(twitter_accesstoken, twitter_accesstokensecret)
-    api = tweepy.API(auth)
-    api.update_status(tweet_string)
 
 
 def send_twitter_alert(hotel_room):
@@ -509,6 +508,13 @@ def send_twitter_alert(hotel_room):
     date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
     message = "Gencon Hotel Alert\n{0}\n{1}\n{2}".format(date_time, hotel_room.name, hotel_room.roomtype)
     post_to_twitter(message)
+
+
+def post_to_twitter(tweet_string):
+    auth = tweepy.OAuthHandler(twitter_consumerkey, twitter_consumersecret)
+    auth.set_access_token(twitter_accesstoken, twitter_accesstokensecret)
+    api = tweepy.API(auth)
+    api.update_status(tweet_string)
 
 
 def table_creation(hotel_list):
@@ -521,7 +527,8 @@ def table_creation(hotel_list):
         elif "Skywalk" in hotel_room.distance:
             distance = "Skywalk"
             distance_unit = "*"
-        table_output.add_row([hotel_room.name, distance, distance_unit, hotel_room.roomtype, hotel_room.price, hotel_room.inventory])
+        table_output.add_row([hotel_room.name, distance, distance_unit, hotel_room.roomtype, hotel_room.price,
+                              hotel_room.inventory])
     table_output.sortby = "Distance"
     table_output.reversesort = False
     title_string = str("Gencon Hotel Rooms Status - Updated " + str(datetime.datetime.now()))
