@@ -33,3 +33,9 @@ twilio-account-sid = TwilioAccountSID
 twilio-account-auth = TwilioAuthToken
 from-number = +15555555555
 to-numbers = +15555555556
+
+[twitter-send-config]
+twitter-consumer-key = XXXXXXXXXXXXXXXXXXXXXXXXX
+twitter-consumer-secret = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+twitter-access-token = XXXXXXXXXXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+twitter-access-token-secret = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
