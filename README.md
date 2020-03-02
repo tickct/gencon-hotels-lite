@@ -38,8 +38,7 @@ The parameters do the following:
 * `housing-authstring` = This is your housing auth string
 * `check-frequency` = This is how often the script updates the data.  Default is 60.  I highly recommend you don't drop it below 30 or you will likely get errors after a while.
 
-* `check-in` - The date you would like to check in (YYYY-MM-DD)
-* `check-out` - The date you would like to check out (YYYY-MM-DD)
+* `event-dates` - Every night you'd like to search for a hotel room - see example cfg for format.
 * `search-skywalk` - Set the filter to accept the word "Skywalk" for a desired room.  Set to 'true' or 'false'.
 * `search-blocks` - Set the filter to accept "Blocks" as an acceptable distance measure.  Set to 'true' or 'false'.
 * `max-blocks` - Maximum measure of blocks to have included in the results.  Required if 'search-blocks' is 'true'.
