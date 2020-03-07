@@ -8,7 +8,8 @@ housing-authstring = XxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxX
 check-frequency = 10
 
 [search-filters]
-event-dates = 2020-7-30,2020-7-31,2020-8-1
+check-in = 2020-7-30
+check-out = 2020-8-1
 search-skywalk = true
 search-blocks = true
 max-blocks = 10
