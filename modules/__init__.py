@@ -1,4 +1,3 @@
-#__init__.py
 from .scraper import get_hotel_room_objects
 from .logic import string_to_bool
 from .logic import all_dates_list
