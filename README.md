@@ -24,24 +24,20 @@ git clone https://github.com/overallcoma/gencon-hotels-lite.git
 ```
 Or download the [zip file](https://github.com/overallcoma/gencon-hotels-lite/archive/master.zip)
 
-Or download and run the pre-compiled .exe for Windows users
-
 ## Install required packages
 ```bash
 pip install -r requirements.txt
 ```
 
 ## Config File Setup
-####You must create your own config file!
-####Copy 'gencon-hotels-lite.cfg.example' to 'gencon-hotels-lite.cfg'
-
 Modify the contents of gencon-hotels-lite.cfg to your requirements and save to gencon-hotes-lite.cfg
 The parameters do the following:
 
 
 * `housing-token` - This is your housing token value
 * `housing-authstring` = This is your housing auth string
-* `check-frequency` = This is how often the script updates the data.  Default is 60.  I highly recommend you don't drop it below 10 or you will likely get errors after a while.
+* `check-frequency` = This is how often the script updates the data.  Default is 60.  I highly recommend you don't drop it below 30 or you will likely get errors after a while.
+
 * `check-in` - The date you would like to check in (YYYY-MM-DD)
 * `check-out` - The date you would like to check out (YYYY-MM-DD)
 * `search-skywalk` - Set the filter to accept the word "Skywalk" for a desired room.  Set to 'true' or 'false'.
@@ -52,8 +48,8 @@ The parameters do the following:
 * `hotel-name-filter-enabled` - Enable or disable filtering based on name of hotel.  Set to 'true' or 'false'.
 * `hotel-name-filter-keyword` - If 'hotel-name-filter-enabled' is set to true, this is required and provided the same to include in the filtered results.
 * `hotel-room-filter-enabled` - Enable or disable filtering based on keyword in the room type.  Set to 'true' or 'false'.
-* `hotel-room-filter-include` - If 'hotel-room-filter-enabled' is set to 'true', this is required and provides the keyword that is required for a room to be included in search results.
-* `hotel-room-filter-exclude` = If 'hotel-room-filter-enabled' is set to 'true', this provides the keyword that excludes a room from search results.
+* `hotel-room-filter-filter-include` - If 'hotel-room-filter-enabled' is set to 'true', this is required and provides the keyword that is required for a room to be included in search results.
+* `hotel-room-filter-filter-exclude` = If 'hotel-room-filter-enabled' is set to 'true', this provides the keyword that excludes a room from search results.
 
 * `send-email` - Enables or Disables the sending of email alerts.  Set to 'true' or 'false'.
 * `send-sms` - Enables or Disables the sending of SMS messages.  Set to 'true' or 'false'.
@@ -89,7 +85,7 @@ python gencon-hotels-lite.py
 
 Alternatively - a Windows Binary is included
 ```sh
-gencon-hotels-lite.exe
+gencon-hotel-lite.exe
 ```
 
 ## Output
