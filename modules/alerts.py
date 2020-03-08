@@ -23,7 +23,8 @@ def send_email_alert(hotel_room, config):
         Distance - {1}\n
         Total Stay Price - {2}\n
         Inventory Available - {3}\n
-        Type of Room - {4}""".format(hotel_room.name, hotel_room.distance, hotel_room.price, hotel_room.inventory, hotel_room.roomtype)
+        Type of Room - {4}""".format(hotel_room.name, hotel_room.distance, hotel_room.price, hotel_room.inventory,
+                                     hotel_room.roomtype)
 
         msg = MIMEText(message, 'plain')
         msg['Subject'] = "Gencon Hotel Alert"
@@ -42,7 +43,11 @@ def send_email_alert(hotel_room, config):
 
 
 def send_sms_alert(hotel_room, config):
-    message = "Hotel Alert\n{0}\n{1}\nPrice - {2}\n Avail - {3}\n Type - {4}".format(hotel_room.name, hotel_room.distance, hotel_room.price, hotel_room.inventory, hotel_room.roomtype)
+    message = "Hotel Alert\n{0}\n{1}\nPrice - {2}\n Avail - {3}\n Type - {4}".format(hotel_room.name,
+                                                                                     hotel_room.distance,
+                                                                                     hotel_room.price,
+                                                                                     hotel_room.inventory,
+                                                                                     hotel_room.roomtype)
     client = Client(config.sms_twilio_sid, config.sms_twilio_auth)
     for phone_number in config.sms_to_numbers:
         try:

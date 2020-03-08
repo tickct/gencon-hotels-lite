@@ -12,7 +12,8 @@ def table_creation(hotel_list):
         elif "Skywalk" in hotel_room.distance:
             distance = "Skywalk"
             distance_unit = "*"
-        table_output.add_row([hotel_room.name, distance, distance_unit, hotel_room.roomtype, hotel_room.price, hotel_room.inventory])
+        table_output.add_row([hotel_room.name, distance, distance_unit, hotel_room.roomtype, hotel_room.price,
+                              hotel_room.inventory])
     table_output.sortby = "Distance"
     table_output.reversesort = False
     title_string = str("Gencon Hotel Rooms Status - Updated " + str(datetime.datetime.now()))

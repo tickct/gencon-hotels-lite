@@ -2,7 +2,7 @@ import modules
 import html
 
 
-class hotelroom(object):
+class HotelRoom(object):
     name = ''
     distance = ''
     price = ''
@@ -11,18 +11,18 @@ class hotelroom(object):
     hotelID = ''
     roomID = ''
 
-    def __init__(self, name, distance, price, inventory, roomtype, hotelID, roomID):
+    def __init__(self, name, distance, price, inventory, roomtype, hotel_id, room_id):
         self.name = name
         self.distance = distance
         self.price = price
         self.inventory = inventory
         self.roomtype = roomtype
-        self.hotelID = hotelID
-        self.roomID = roomID
+        self.hotelID = hotel_id
+        self.roomID = room_id
 
 
-def make_hotel_room_object(name, distance, price, inventory, roomtype, hotelID, roomID):
-    hotel_room = hotelroom(name, distance, price, inventory, roomtype, hotelID, roomID)
+def make_hotel_room_object(name, distance, price, inventory, roomtype, hotel_id, room_id):
+    hotel_room = HotelRoom(name, distance, price, inventory, roomtype, hotel_id, room_id)
     return hotel_room
 
 

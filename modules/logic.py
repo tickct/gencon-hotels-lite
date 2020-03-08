@@ -1,6 +1,7 @@
 import datetime
 import os
 
+
 def string_to_bool(truefalse):
     if truefalse == "true":
         return True
@@ -21,9 +22,7 @@ def all_dates_list(start, end):
 
 
 def clear():
-    # for windows
     if os.name == 'nt':
         _ = os.system('cls')
-        # for mac and linux(here, os.name is 'posix')
     else:
         _ = os.system('clear')
